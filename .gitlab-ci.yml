@@ -1,0 +1,39 @@
+image: shitovdm/grpc-go:0.1.0
+
+variables:
+  # Your GitLab host.
+  GITLAB_HOST: "gitlab.ru"
+  # Your GitLab committer username.
+  USER_NAME: "Gitlab CI"
+  # Your GitLab committer email.
+  USER_EMAIL: "cicd@gitlab.ru"
+  # Your GitLab repository URL.
+  REPOSITORY: git@gitlab.ru:user/repository_name
+  BRANCH: master
+
+stages:
+    - compile
+     
+compile:
+    stage: compile
+    environment:
+        name: master
+    before_script:
+      - mkdir -p ~/.ssh
+      - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+      - chmod 600 ~/.ssh/id_rsa
+      - ssh-keyscan -H "$GITLAB_HOST" >> ~/.ssh/known_hosts
+      - git config --global user.name "$USER_NAME"
+      - git config --global user.email "$USER_EMAIL"
+      - git checkout $BRANCH
+      - git fetch --all
+      - git reset --hard origin/master
+    script:
+      - protoc --go_out=paths=source_relative:. ./proto/*/*.proto
+      - protoc --go-grpc_out=paths=source_relative:. ./proto/*/*.proto
+    after_script:
+      - git add .
+      - git commit -m "Auto compile proto files >> $CI_COMMIT_TAG"
+      - git push $REPOSITORY $BRANCH
+    only:
+      - tags
