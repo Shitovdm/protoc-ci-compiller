@@ -15,18 +15,15 @@ jobs:
         id: vars
         run: |
           echo ::set-output name=tag::$(echo ${GITHUB_REF:10})
-          echo ::set-output name=tag2::${GITHUB_REF#refs/*/}
-      - name: Check output
-        env:
-          RELEASE_VERSION: ${{ steps.vars.outputs.tag }}   
+          echo ::set-output name=tag2::${GITHUB_REF#refs/*/}  
       - name: Build the tagged Docker image
         run: |
           echo $RELEASE_VERSION
           echo ${{ steps.vars.outputs.tag }}
           echo ${{ steps.vars.outputs.tag2 }}
-          docker build . --file Dockerfile --tag shitovdm/grpc-go:$RELEASE_VERSION
+          docker build . --file Dockerfile --tag shitovdm/grpc-go:${{ steps.vars.outputs.tag }}
       - name: Push the tagged Docker image
-        run: docker push shitovdm/grpc-g:$RELEASE_VERSION
+        run: docker push shitovdm/grpc-g:${{ steps.vars.outputs.tag }}
       - name: Build the latest Docker image
         run: docker build . --file Dockerfile --tag shitovdm/grpc-g:latest
       - name: Push the latest Docker image
