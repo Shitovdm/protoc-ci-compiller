@@ -1,4 +1,4 @@
-FROM golang:1.14-alpine
+FROM golang:1.14
 
 RUN apt-get update && \
     apt-get -y install git unzip build-essential autoconf libtool
