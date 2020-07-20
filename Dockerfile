@@ -1,7 +1,8 @@
-FROM golang:1.14
+FROM golang:1.13.2-alpine
 
-RUN apt-get update && \
-    apt-get -y install git unzip build-essential autoconf libtool
+RUN apk update && apk upgrade && \
+    apk add --no-cache bash git openssh curl unzip build-essential autoconf libtool
+
 RUN git clone https://github.com/google/protobuf.git && \
     cd protobuf && \
     ./autogen.sh && \
