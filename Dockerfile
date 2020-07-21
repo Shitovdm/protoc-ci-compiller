@@ -1,4 +1,4 @@
-FROM golang:1.14-alpine
+FROM golang:1.13.2-alpine
 
 ENV PACKAGES="build-base autoconf automake libtool"
 RUN apk update && apk upgrade && \
@@ -17,7 +17,5 @@ RUN apk update && apk upgrade && \
 	go get -u github.com/golang/protobuf/proto && \
 	go get -u github.com/golang/protobuf/protoc-gen-go && \
 	go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc && \
-	go clean -modcache && \
-	go clean -cache && \
 	apk del $PACKAGES && \
 	rm -rf /var/cache/apk/*
