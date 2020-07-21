@@ -2,7 +2,7 @@ FROM golang:1.13.2-alpine
 
 ENV PACKAGES="build-base autoconf automake libtool"
 RUN apk update && apk upgrade && \
-	apk add --update git bash ssh curl libstdc++ && \
+	apk add --update git bash openssh curl libstdc++ && \
 	apk add --update $PACKAGES && \
 	git clone https://github.com/google/protobuf.git && \
     cd protobuf && \
