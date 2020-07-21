@@ -1,19 +1,23 @@
-FROM golang:1.13.2-alpine
+FROM golang:1.14-alpine
 
+ENV PACKAGES="build-base autoconf automake libtool"
 RUN apk update && apk upgrade && \
-    apk add --no-cache bash git openssh curl unzip build-essential autoconf libtool
-
-RUN git clone https://github.com/google/protobuf.git && \
+	apk add --update git bash curl libstdc++ && \
+	apk add --update $PACKAGES && \
+	git clone https://github.com/google/protobuf.git && \
     cd protobuf && \
     ./autogen.sh && \
     ./configure && \
     make && \
     make install && \
-    ldconfig && \
+    ldconfig /etc/ld.so.conf.d && \
     make clean && \
     cd .. && \
-    rm -r protobuf
-
-RUN go get google.golang.org/grpc
-RUN go get github.com/golang/protobuf/protoc-gen-go
-RUN go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
+    rm -r protobuf && \
+	go get -u github.com/golang/protobuf/proto && \
+	go get -u github.com/golang/protobuf/protoc-gen-go && \
+	go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc && \
+	go clean -modcache && \
+	go clean -cache && \
+	apk del $PACKAGES && \
+	rm -rf /var/cache/apk/*
