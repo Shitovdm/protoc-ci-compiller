@@ -1,6 +1,9 @@
 FROM golang:1.13.2-alpine
 
 ENV PACKAGES="build-base autoconf automake libtool"
+RUN addgroup -g 993 gitlab-runner && \
+    adduser -u 996 -G gitlab-runner -s /bin/sh -D gitlab-runner
+
 RUN apk update && apk upgrade && \
 	apk add --update git bash openssh curl libstdc++ && \
 	apk add --update $PACKAGES && \
@@ -19,3 +22,5 @@ RUN apk update && apk upgrade && \
 	go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc && \
 	apk del $PACKAGES && \
 	rm -rf /var/cache/apk/*
+
+USER gitlab-runner
